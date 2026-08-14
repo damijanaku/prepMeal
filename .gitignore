@@ -1,0 +1,41 @@
+## Build output
+[Oo]bj/
+[Bb]in/
+[Dd]ebug/
+[Rr]elease/
+[xX]64/
+[xX]86/
+
+## Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.dbmdl
+*.jfm
+
+## .NET / NuGet
+project.lock.json
+project.fragment.lock.json
+artifacts/
+packages/
+*.nuget.props
+*.nuget.targets
+*.pdb
+*.cache
+*.dll
+*.exe
+
+## ASP.NET Core
+appsettings.Development.json
+*.db
+*.sqlite
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## Logs
+*.log
