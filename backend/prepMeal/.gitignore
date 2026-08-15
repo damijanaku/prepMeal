@@ -1,0 +1,59 @@
+## Build output
+[Oo]bj/
+[Bb]in/
+[Dd]ebug/
+[Rr]elease/
+[xX]64/
+[xX]86/
+
+## Local secrets / generated keys
+private_key.pem
+public_key.pem
+*.pem
+
+*.db-shm
+*.db-wal
+*.sqlite-shm
+*.sqlite-wal
+
+
+## Keep shared config tracked
+!appsettings.json
+
+## Local-only configuration
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+## Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.dbmdl
+*.jfm
+
+## .NET / NuGet
+project.lock.json
+project.fragment.lock.json
+artifacts/
+packages/
+*.nuget.props
+*.nuget.targets
+*.pdb
+*.cache
+*.dll
+*.exe
+
+## ASP.NET Core / local DB
+*.db
+*.sqlite
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## Logs
+*.log

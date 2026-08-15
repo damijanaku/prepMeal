@@ -4,16 +4,23 @@ namespace prepMeal.Models;
 
 public class RegisterViewModel
 {
+    [Required]
     public string Name { get; set; } = string.Empty;
+
+    [Required]
     [EmailAddress]
     public string Email { get; set; } = string.Empty;
-    public string username { get; set; } = string.Empty;
 
+    [Required]
+    public string Username { get; set; } = string.Empty;
+
+    [Required]
     [DataType(DataType.Password)]
     [MinLength(8, ErrorMessage = "Password must be at least 8 characters long.")]
-    public string password { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 
+    [Required]
     [DataType(DataType.Password)]
-    [Compare("password", ErrorMessage = "Passwords do not match.")]
-    public string confirmPassword { get; set; } = string.Empty;
+    [Compare("Password", ErrorMessage = "Passwords do not match.")]
+    public string ConfirmPassword { get; set; } = string.Empty;
 }

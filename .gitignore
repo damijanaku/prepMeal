@@ -1,12 +1,8 @@
-## Build output
-[Oo]bj/
-[Bb]in/
-[Dd]ebug/
-[Rr]elease/
-[xX]64/
-[xX]86/
+# OS files
+.DS_Store
+Thumbs.db
 
-## Visual Studio / VS Code
+# Editor folders
 .vs/
 .vscode/
 *.user
@@ -16,26 +12,52 @@
 *.dbmdl
 *.jfm
 
-## .NET / NuGet
-project.lock.json
-project.fragment.lock.json
-artifacts/
-packages/
-*.nuget.props
-*.nuget.targets
-*.pdb
-*.cache
-*.dll
-*.exe
-
-## ASP.NET Core
-appsettings.Development.json
-*.db
-*.sqlite
-
-## OS files
-.DS_Store
-Thumbs.db
-
-## Logs
+# Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment / secrets
+.env
+.env.*
+private_key.pem
+public_key.pem
+*.pem
+secrets.json
+
+# Frontend (React)
+/frontend/prepmeal/node_modules/
+/frontend/prepmeal/build/
+/frontend/prepmeal/.pnp
+/frontend/prepmeal/.pnp.js
+/frontend/prepmeal/.env.local
+/frontend/prepmeal/.env.development.local
+/frontend/prepmeal/.env.test.local
+/frontend/prepmeal/.env.production.local
+
+# Backend (.NET)
+/backend/prepMeal/bin/
+/backend/prepMeal/obj/
+/backend/prepMeal/Debug/
+/backend/prepMeal/Release/
+/backend/prepMeal/[Bb]in/
+/backend/prepMeal/[Oo]bj/
+/backend/prepMeal/x64/
+/backend/prepMeal/x86/
+/backend/prepMeal/artifacts/
+/backend/prepMeal/packages/
+/backend/prepMeal/project.lock.json
+/backend/prepMeal/project.fragment.lock.json
+/backend/prepMeal/*.pdb
+/backend/prepMeal/*.cache
+/backend/prepMeal/*.dll
+/backend/prepMeal/*.exe
+/backend/prepMeal/*.db
+/backend/prepMeal/*.sqlite
+/backend/prepMeal/appsettings.Development.json
+/backend/prepMeal/appsettings.Local.json
+/backend/prepMeal/Library/Application Support/Microsoft/DeveloperTools/deviceid
+
+# Keep shared config tracked
+!/backend/prepMeal/appsettings.json
