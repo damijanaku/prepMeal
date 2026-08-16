@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using prepMeal.Data;
@@ -16,6 +17,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetUsers()
     {
         var users = await _context.Users
@@ -33,6 +35,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<IActionResult> GetUserById(int id)
     {
         var user = await _context.Users.FindAsync(id);

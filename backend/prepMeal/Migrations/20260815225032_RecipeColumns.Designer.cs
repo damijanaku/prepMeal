@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using prepMeal.Data;
 
@@ -10,12 +11,29 @@ using prepMeal.Data;
 namespace prepMeal.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260815225032_RecipeColumns")]
+    partial class RecipeColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
+
+            modelBuilder.Entity("IngredientRecipe", b =>
+                {
+                    b.Property<int>("IngredientsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RecipesId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("IngredientsId", "RecipesId");
+
+                    b.HasIndex("RecipesId");
+
+                    b.ToTable("RecipeIngredients", (string)null);
+                });
 
             modelBuilder.Entity("prepMeal.Models.Ingredient", b =>
                 {
@@ -62,14 +80,6 @@ namespace prepMeal.Migrations
                     b.Property<int>("SaturatedFats")
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("ServingSize")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ServingUnit")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT");
-
                     b.Property<int?>("Sodium")
                         .HasColumnType("INTEGER");
 
@@ -107,35 +117,6 @@ namespace prepMeal.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("Recipes");
-                });
-
-            modelBuilder.Entity("prepMeal.Models.RecipeIngredient", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("IngredientId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("RecipeId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IngredientId");
-
-                    b.HasIndex("RecipeId");
-
-                    b.ToTable("RecipeIngredient");
                 });
 
             modelBuilder.Entity("prepMeal.Models.User", b =>
@@ -177,6 +158,21 @@ namespace prepMeal.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("IngredientRecipe", b =>
+                {
+                    b.HasOne("prepMeal.Models.Ingredient", null)
+                        .WithMany()
+                        .HasForeignKey("IngredientsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("prepMeal.Models.Recipe", null)
+                        .WithMany()
+                        .HasForeignKey("RecipesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("prepMeal.Models.Nutrition", b =>
                 {
                     b.HasOne("prepMeal.Models.Ingredient", "Ingredient")
@@ -199,35 +195,9 @@ namespace prepMeal.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("prepMeal.Models.RecipeIngredient", b =>
-                {
-                    b.HasOne("prepMeal.Models.Ingredient", "Ingredient")
-                        .WithMany("RecipeIngredients")
-                        .HasForeignKey("IngredientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("prepMeal.Models.Recipe", "Recipe")
-                        .WithMany("RecipeIngredients")
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Ingredient");
-
-                    b.Navigation("Recipe");
-                });
-
             modelBuilder.Entity("prepMeal.Models.Ingredient", b =>
                 {
                     b.Navigation("Nutrition");
-
-                    b.Navigation("RecipeIngredients");
-                });
-
-            modelBuilder.Entity("prepMeal.Models.Recipe", b =>
-                {
-                    b.Navigation("RecipeIngredients");
                 });
 #pragma warning restore 612, 618
         }
