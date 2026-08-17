@@ -13,12 +13,13 @@ public class AppDbContext : DbContext
     public DbSet<Recipe> Recipes => Set<Recipe>();
     public DbSet<Ingredient> Ingredients => Set<Ingredient>();
     public DbSet<Nutrition> Nutritions => Set<Nutrition>();
+    public DbSet<RecipeIngredient> RecipeIngredients => Set<RecipeIngredient>(); 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Unique 
+        // Unique constraints
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
@@ -33,7 +34,6 @@ public class AppDbContext : DbContext
             .HasForeignKey<Nutrition>(n => n.IngredientId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Many-to-Many
         modelBuilder.Entity<RecipeIngredient>()
             .HasOne(ri => ri.Recipe)
             .WithMany(r => r.RecipeIngredients)
@@ -45,5 +45,23 @@ public class AppDbContext : DbContext
             .WithMany(i => i.RecipeIngredients)
             .HasForeignKey(ri => ri.IngredientId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<RecipeIngredient>()
+            .Property(ri => ri.Unit)
+            .HasDefaultValue("g")
+            .HasMaxLength(20);
+
+        modelBuilder.Entity<Ingredient>()
+            .Property(i => i.FoodGroup)
+            .HasConversion<string>()
+            .HasDefaultValue(FoodGroup.Others);
+
+        modelBuilder.Entity<Nutrition>()
+            .Property(n => n.ServingSize)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<RecipeIngredient>()
+            .Property(ri => ri.Amount)
+            .HasPrecision(18, 2);
     }
 }

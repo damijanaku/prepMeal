@@ -28,6 +28,9 @@ public class Ingredient
     [Required]
     public string Name { get; set; } = string.Empty;
 
+    [Required]
+    public FoodGroup FoodGroup { get; set; } = FoodGroup.Others;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
@@ -83,4 +86,17 @@ public class Nutrition
     public int SaturatedFats { get; set; }
     public int Protein { get; set; }
     public int? Sodium { get; set; }
+}
+
+public enum FoodGroup
+{
+    Fruits,
+    Vegetables,
+    Grains,
+    ProteinFoods,
+    Dairy,
+    FatsAndOils,
+    SweetsAndSnacks,
+    Beverages,
+    Others
 }

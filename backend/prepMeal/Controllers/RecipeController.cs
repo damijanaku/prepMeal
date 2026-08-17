@@ -36,6 +36,7 @@ public class RecipeController : ControllerBase
                 {
                     ri.Ingredient.Id,
                     ri.Ingredient.Name,
+                    ri.Ingredient.FoodGroup, 
                     ri.Amount,
                     ri.Unit,
                     ri.Ingredient.Nutrition
@@ -81,6 +82,7 @@ public class RecipeController : ControllerBase
             {
                 ri.Ingredient.Id,
                 ri.Ingredient.Name,
+                ri.Ingredient.FoodGroup, // Added FoodGroup
                 ri.Amount,
                 ri.Unit,
                 ri.Ingredient.Nutrition
@@ -140,6 +142,58 @@ public class RecipeController : ControllerBase
         return CreatedAtAction(nameof(GetRecipe), new { id = recipe.Id }, new { recipe.Id, message = "Recipe created successfully" });
     }
 
+    [HttpPut("{id}")]
+    [Authorize]
+    public async Task<IActionResult> UpdateRecipe(int id, [FromBody] UpdateRecipeDto dto)
+    {
+        var recipe = await _context.Recipes
+            .Include(r => r.RecipeIngredients)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (recipe == null)
+        {
+            return NotFound(new { message = "Recipe not found" });
+        }
+
+        // Updating instructions if provided
+        if (!string.IsNullOrEmpty(dto.Instructions))
+        {
+            recipe.Instructions = dto.Instructions;
+        }
+
+        // Updatinh ingredients if provided
+        if (dto.Ingredients != null && dto.Ingredients.Any())
+        {
+            // Validate all ingredient IDs exist
+            var requestedIngredientIds = dto.Ingredients.Select(i => i.IngredientId).Distinct().ToList();
+            var existingIngredientIds = await _context.Ingredients
+                .Where(i => requestedIngredientIds.Contains(i.Id))
+                .Select(i => i.Id)
+                .ToListAsync();
+
+            if (existingIngredientIds.Count != requestedIngredientIds.Count)
+            {
+                return BadRequest(new { message = "One or more Ingredient IDs do not exist." });
+            }
+
+            // Removing existing ingredients
+            _context.RecipeIngredients.RemoveRange(recipe.RecipeIngredients);
+
+            // Adding new ingredients
+            recipe.RecipeIngredients = dto.Ingredients.Select(item => new RecipeIngredient
+            {
+                IngredientId = item.IngredientId,
+                Amount = item.Amount,
+                Unit = item.Unit ?? "g"
+            }).ToList();
+        }
+
+        recipe.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Recipe updated successfully", recipe.Id });
+    }
+
     [HttpDelete("{id}")]
     [Authorize]
     public async Task<IActionResult> DeleteRecipe(int id)
@@ -162,6 +216,12 @@ public class CreateRecipeDto
     public int AuthorId { get; set; }
     public string? Instructions { get; set; }
     public List<CreateRecipeIngredientDto> Ingredients { get; set; } = new();
+}
+
+public class UpdateRecipeDto
+{
+    public string? Instructions { get; set; }
+    public List<CreateRecipeIngredientDto>? Ingredients { get; set; }
 }
 
 public class CreateRecipeIngredientDto
