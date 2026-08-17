@@ -12,7 +12,6 @@ export const useApiClient = () => {
   const apiCall = async (url: string, options: RequestOptions = {}) => {
     const { requiresAuth = true, ...fetchOptions } = options;
     
-    // Use full URL if it starts with http, otherwise prepend base URL
     const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
 
     // Prepare headers
@@ -27,7 +26,6 @@ export const useApiClient = () => {
       headers['Authorization'] = `Bearer ${accessToken}`;
     }
 
-    // Merge headers
     fetchOptions.headers = {
       ...headers,
       ...fetchOptions.headers,
@@ -36,7 +34,6 @@ export const useApiClient = () => {
     try {
       let response = await fetch(fullUrl, fetchOptions);
 
-      // Handle 401 for authenticated requests
       if (response.status === 401 && requiresAuth) {
         console.log('Access token expired, attempting refresh...');
         
@@ -45,7 +42,6 @@ export const useApiClient = () => {
         if (refreshSuccess) {
           const newToken = localStorage.getItem('accessToken');
           if (newToken) {
-            // Update the authorization header
             fetchOptions.headers = {
               ...fetchOptions.headers,
               'Authorization': `Bearer ${newToken}`,
@@ -62,22 +58,18 @@ export const useApiClient = () => {
         }
       }
 
-      // For non-OK responses, throw an error with the response
       if (!response.ok) {
-        // Try to get error message from response body
         let errorMessage = `Request failed with status ${response.status}`;
         try {
           const errorData = await response.json();
           errorMessage = errorData.message || errorData.error || errorMessage;
         } catch {
-          // If response is not JSON, get text
           try {
             const text = await response.text();
             if (text) {
               errorMessage = text;
             }
           } catch {
-            // If we can't read the body, use default message
           }
         }
         const error = new Error(errorMessage);

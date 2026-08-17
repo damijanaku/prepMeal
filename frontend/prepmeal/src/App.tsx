@@ -1,4 +1,3 @@
-// App.tsx
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './pages/login';
 import Register from './pages/register';
@@ -6,6 +5,7 @@ import Dashboard from './pages/(authenticated)/dashboard';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicRoute } from './components/PublicRoute'; 
+import Ingredients from './pages/(authenticated)/(tabs)/ingredients';
 
 function App() {
   return (
@@ -34,6 +34,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/ingredients"
+            element={
+              <ProtectedRoute>
+                <Ingredients />
               </ProtectedRoute>
             }
           />

@@ -38,15 +38,49 @@ public class IngredientController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetIngredients()
+    public async Task<IActionResult> GetIngredients([FromQuery] string? foodGroup)
     {
+        if (string.IsNullOrEmpty(foodGroup))
+        {
+            var allIngredients = await _context.Ingredients
+                .AsNoTracking()
+                .Select(i => new IngredientDto
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    FoodGroup = i.FoodGroup.ToString(),
+                    Nutrition = i.Nutrition != null ? new NutritionDto
+                    {
+                        ServingSize = i.Nutrition.ServingSize,
+                        ServingUnit = i.Nutrition.ServingUnit,
+                        Calories = i.Nutrition.Calories,
+                        Carbs = i.Nutrition.Carbs,
+                        Sugar = i.Nutrition.Sugar,
+                        Fats = i.Nutrition.Fats,
+                        SaturatedFats = i.Nutrition.SaturatedFats,
+                        Protein = i.Nutrition.Protein,
+                        Sodium = i.Nutrition.Sodium
+                    } : null
+                })
+                .ToListAsync();
+
+            return Ok(allIngredients);
+        }
+
+        // Filter by foodGroup if provided
+        if (!Enum.TryParse<FoodGroup>(foodGroup, true, out var parsedFoodGroup))
+        {
+            return BadRequest(new { message = "Invalid food group. Valid values: Fruits, Vegetables, Grains, ProteinFoods, Dairy, FatsAndOils, SweetsAndSnacks, Beverages, Others" });
+        }
+
         var ingredients = await _context.Ingredients
             .AsNoTracking()
+            .Where(i => i.FoodGroup == parsedFoodGroup)
             .Select(i => new IngredientDto
             {
                 Id = i.Id,
                 Name = i.Name,
-                FoodGroup = i.FoodGroup.ToString(), 
+                FoodGroup = i.FoodGroup.ToString(),
                 Nutrition = i.Nutrition != null ? new NutritionDto
                 {
                     ServingSize = i.Nutrition.ServingSize,
@@ -98,6 +132,7 @@ public class IngredientController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> CreateIngredient([FromBody] CreateIngredientDto dto)
     {
         // Update the validation message to match your enum
@@ -191,12 +226,3 @@ public class IngredientController : ControllerBase
         return NoContent();
     }
 }
-
-
-
-
-
-
-
-
-
