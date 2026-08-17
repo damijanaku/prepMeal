@@ -16,7 +16,12 @@ function LoginForm() {
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     
+    setErrorMessage("");
+    setIsLoading(true);
+
     try {
+      console.log('Attempting login with:', { usernameOrEmail: email });
+      
       const response = await apiCall('/api/account/login', {
         method: 'POST',
         body: JSON.stringify({ usernameOrEmail: email, password }),
@@ -24,10 +29,30 @@ function LoginForm() {
       });
       
       const data = await response.json();
+      console.log('Login response:', data);
+      
+      if (!data.token || !data.refreshToken || !data.user) {
+        throw new Error('Invalid response from server: missing token or user data');
+      }
+      
       login(data.token, data.refreshToken, data.user);
+      console.log('Login successful, navigating to dashboard');
       navigate('/dashboard');
+      
     } catch (error) {
-      setErrorMessage('Login failed');
+      console.error('Login error:', error);
+      
+      let message = 'Login failed. Please try again.';
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      setErrorMessage(message);
+      
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        setErrorMessage('Cannot connect to server. Please check if the backend is running.');
+      }
+    } finally {
+      setIsLoading(false);
     }
   }
 

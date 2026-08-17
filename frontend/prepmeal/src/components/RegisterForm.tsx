@@ -26,7 +26,7 @@ function RegisterForm() {
     setIsLoading(true);
 
     try {
-      const response = await apiCall("http://localhost:5204/api/account/register", {
+      const response = await apiCall("/api/account/register", {
         method: "POST",
         body: JSON.stringify({ name, username, email, password, confirmPassword }),
         requiresAuth: false, // Registration doesn't need authentication
