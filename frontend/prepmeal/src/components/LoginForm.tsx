@@ -1,5 +1,7 @@
+import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useApiClient } from "../utils/apiClient";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -8,33 +10,24 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { login } = useAuth(); 
+  const { apiCall } = useApiClient();
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    setErrorMessage("");
-    setIsLoading(true);
-
+    
     try {
-      const response = await fetch("http://localhost:5204/api/account/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await apiCall('/api/account/login', {
+        method: 'POST',
         body: JSON.stringify({ usernameOrEmail: email, password }),
+        requiresAuth: false 
       });
-
-      if (response.ok) {
-        navigate("/dashboard"); // Redirect user on successful login
-        return;
-      }
-
-      const errorBody = await response.text();
-      setErrorMessage(errorBody || "Invalid credentials. Please try again.");
+      
+      const data = await response.json();
+      login(data.token, data.refreshToken, data.user);
+      navigate('/dashboard');
     } catch (error) {
-      setErrorMessage("Network error. Please verify backend status and CORS settings.");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+      setErrorMessage('Login failed');
     }
   }
 
