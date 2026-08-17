@@ -7,10 +7,13 @@ using prepMeal.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
 builder.Services.AddOpenApi();
-builder.Services.AddControllers();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddAuthorization();
@@ -30,7 +33,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-//  JWT Authentication
+// JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -49,22 +52,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-
-
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-
-
 app.UseRouting();
-
 app.UseCors("AllowReactApp");
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

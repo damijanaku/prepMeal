@@ -11,8 +11,8 @@ using prepMeal.Data;
 namespace prepMeal.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260816194324_denormalizatio_of_db")]
-    partial class denormalizatio_of_db
+    [Migration("20260817174632_FixedDefaultValueFoodGroup")]
+    partial class FixedDefaultValueFoodGroup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,6 +27,10 @@ namespace prepMeal.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FoodGroup")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -47,25 +51,26 @@ namespace prepMeal.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Calories")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Calories")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Carbs")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Carbs")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Fats")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Fats")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("IngredientId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Protein")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Protein")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("SaturatedFats")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("SaturatedFats")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ServingSize")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ServingUnit")
@@ -73,11 +78,11 @@ namespace prepMeal.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("Sodium")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal?>("Sodium")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Sugar")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Sugar")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -119,6 +124,7 @@ namespace prepMeal.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("IngredientId")
@@ -129,8 +135,10 @@ namespace prepMeal.Migrations
 
                     b.Property<string>("Unit")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("g");
 
                     b.HasKey("Id");
 
@@ -138,7 +146,7 @@ namespace prepMeal.Migrations
 
                     b.HasIndex("RecipeId");
 
-                    b.ToTable("RecipeIngredient");
+                    b.ToTable("RecipeIngredients");
                 });
 
             modelBuilder.Entity("prepMeal.Models.User", b =>
@@ -160,6 +168,13 @@ namespace prepMeal.Migrations
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedAt")

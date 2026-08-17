@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using prepMeal.Models;
+using prepMeal.Models.Enums;
 
 namespace prepMeal.Data;
 
@@ -54,7 +55,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Ingredient>()
             .Property(i => i.FoodGroup)
             .HasConversion<string>()
-            .HasDefaultValue(FoodGroup.Others);
+            .HasSentinel(FoodGroup.Others);
 
         modelBuilder.Entity<Nutrition>()
             .Property(n => n.ServingSize)

@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using prepMeal.Models.Enums;
 
 namespace prepMeal.Models;
 
@@ -72,31 +74,34 @@ public class Nutrition
     public int IngredientId { get; set; }
 
     [ForeignKey(nameof(IngredientId))]
+    [JsonIgnore]
     public Ingredient Ingredient { get; set; } = null!;
 
     [Column(TypeName = "decimal(18,2)")]
-    public decimal ServingSize { get; set; } = 100m; // Default serving size in grams
+    public decimal ServingSize { get; set; } = 100m;
 
     [MaxLength(20)]
-    public string ServingUnit { get; set; } = "g"; // Default serving unit
-    public int Calories { get; set; }
-    public int Carbs { get; set; }
-    public int Sugar { get; set; }
-    public int Fats { get; set; }
-    public int SaturatedFats { get; set; }
-    public int Protein { get; set; }
-    public int? Sodium { get; set; }
+    public string ServingUnit { get; set; } = "g";
+
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Calories { get; set; }
+
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Carbs { get; set; }
+
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Sugar { get; set; }
+
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Fats { get; set; }
+
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal SaturatedFats { get; set; }
+
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Protein { get; set; }
+
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal? Sodium { get; set; }
 }
 
-public enum FoodGroup
-{
-    Fruits,
-    Vegetables,
-    Grains,
-    ProteinFoods,
-    Dairy,
-    FatsAndOils,
-    SweetsAndSnacks,
-    Beverages,
-    Others
-}

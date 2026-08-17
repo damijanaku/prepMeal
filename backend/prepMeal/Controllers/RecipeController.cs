@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using prepMeal.Data;
+using prepMeal.DTOs.Nutrition;
+using prepMeal.DTOs.Recipe;
+using prepMeal.DTOs.Shared;
 using prepMeal.Models;
 
 namespace prepMeal.Controllers;
@@ -26,36 +29,53 @@ public class RecipeController : ControllerBase
             .Include(r => r.RecipeIngredients)
                 .ThenInclude(ri => ri.Ingredient)
                     .ThenInclude(i => i.Nutrition)
-            .Select(r => new
-            {
-                r.Id,
-                r.Instructions,
-                r.CreatedAt,
-                Author = new { r.Author.Id, r.Author.Name, r.Author.Username },
-                Ingredients = r.RecipeIngredients.Select(ri => new
-                {
-                    ri.Ingredient.Id,
-                    ri.Ingredient.Name,
-                    ri.Ingredient.FoodGroup, 
-                    ri.Amount,
-                    ri.Unit,
-                    ri.Ingredient.Nutrition
-                }),
-                TotalMacros = new
-                {
-                    Calories = r.RecipeIngredients.Sum(ri => ri.Ingredient.Nutrition != null && ri.Ingredient.Nutrition.ServingSize > 0 
-                        ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * ri.Ingredient.Nutrition.Calories : 0),
-                    Protein = r.RecipeIngredients.Sum(ri => ri.Ingredient.Nutrition != null && ri.Ingredient.Nutrition.ServingSize > 0 
-                        ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * ri.Ingredient.Nutrition.Protein : 0),
-                    Carbs = r.RecipeIngredients.Sum(ri => ri.Ingredient.Nutrition != null && ri.Ingredient.Nutrition.ServingSize > 0 
-                        ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * ri.Ingredient.Nutrition.Carbs : 0),
-                    Fats = r.RecipeIngredients.Sum(ri => ri.Ingredient.Nutrition != null && ri.Ingredient.Nutrition.ServingSize > 0 
-                        ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * ri.Ingredient.Nutrition.Fats : 0)
-                }
-            })
             .ToListAsync();
 
-        return Ok(recipes);
+        var result = recipes.Select(r => new RecipeDto
+        {
+            Id = r.Id,
+            Instructions = r.Instructions,
+            CreatedAt = r.CreatedAt,
+            Author = new AuthorDto
+            {
+                Id = r.Author.Id,
+                Name = r.Author.Name,
+                Username = r.Author.Username
+            },
+            Ingredients = r.RecipeIngredients.Select(ri => new RecipeIngredientDto
+            {
+                Id = ri.Ingredient.Id,
+                Name = ri.Ingredient.Name,
+                FoodGroup = ri.Ingredient.FoodGroup.ToString(),
+                Amount = ri.Amount,
+                Unit = ri.Unit,
+                Nutrition = ri.Ingredient.Nutrition != null ? new NutritionDto
+                {
+                    ServingSize = ri.Ingredient.Nutrition.ServingSize,
+                    ServingUnit = ri.Ingredient.Nutrition.ServingUnit,
+                    Calories = ri.Ingredient.Nutrition.Calories,
+                    Carbs = ri.Ingredient.Nutrition.Carbs,
+                    Sugar = ri.Ingredient.Nutrition.Sugar,
+                    Fats = ri.Ingredient.Nutrition.Fats,
+                    SaturatedFats = ri.Ingredient.Nutrition.SaturatedFats,
+                    Protein = ri.Ingredient.Nutrition.Protein,
+                    Sodium = ri.Ingredient.Nutrition.Sodium
+                } : null
+            }).ToList(),
+            TotalMacros = new TotalMacrosDto
+            {
+                Calories = r.RecipeIngredients.Sum(ri => ri.Ingredient.Nutrition != null && ri.Ingredient.Nutrition.ServingSize > 0 
+                    ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * (double)ri.Ingredient.Nutrition.Calories : 0),
+                Protein = r.RecipeIngredients.Sum(ri => ri.Ingredient.Nutrition != null && ri.Ingredient.Nutrition.ServingSize > 0 
+                    ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * (double)ri.Ingredient.Nutrition.Protein : 0),
+                Carbs = r.RecipeIngredients.Sum(ri => ri.Ingredient.Nutrition != null && ri.Ingredient.Nutrition.ServingSize > 0 
+                    ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * (double)ri.Ingredient.Nutrition.Carbs : 0),
+                Fats = r.RecipeIngredients.Sum(ri => ri.Ingredient.Nutrition != null && ri.Ingredient.Nutrition.ServingSize > 0 
+                    ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * (double)ri.Ingredient.Nutrition.Fats : 0)
+            }
+        }).ToList();
+
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
@@ -72,31 +92,47 @@ public class RecipeController : ControllerBase
         if (recipe == null)
             return NotFound(new { message = "Recipe not found" });
 
-        var result = new
+        var result = new RecipeDto
         {
-            recipe.Id,
-            recipe.Instructions,
-            recipe.CreatedAt,
-            Author = new { recipe.Author.Id, recipe.Author.Name, recipe.Author.Username },
-            Ingredients = recipe.RecipeIngredients.Select(ri => new
+            Id = recipe.Id,
+            Instructions = recipe.Instructions,
+            CreatedAt = recipe.CreatedAt,
+            Author = new AuthorDto
             {
-                ri.Ingredient.Id,
-                ri.Ingredient.Name,
-                ri.Ingredient.FoodGroup, // Added FoodGroup
-                ri.Amount,
-                ri.Unit,
-                ri.Ingredient.Nutrition
-            }),
-            TotalMacros = new
+                Id = recipe.Author.Id,
+                Name = recipe.Author.Name,
+                Username = recipe.Author.Username
+            },
+            Ingredients = recipe.RecipeIngredients.Select(ri => new RecipeIngredientDto
+            {
+                Id = ri.Ingredient.Id,
+                Name = ri.Ingredient.Name,
+                FoodGroup = ri.Ingredient.FoodGroup.ToString(),
+                Amount = ri.Amount,
+                Unit = ri.Unit,
+                Nutrition = ri.Ingredient.Nutrition != null ? new NutritionDto
+                {
+                    ServingSize = ri.Ingredient.Nutrition.ServingSize,
+                    ServingUnit = ri.Ingredient.Nutrition.ServingUnit,
+                    Calories = ri.Ingredient.Nutrition.Calories,
+                    Carbs = ri.Ingredient.Nutrition.Carbs,
+                    Sugar = ri.Ingredient.Nutrition.Sugar,
+                    Fats = ri.Ingredient.Nutrition.Fats,
+                    SaturatedFats = ri.Ingredient.Nutrition.SaturatedFats,
+                    Protein = ri.Ingredient.Nutrition.Protein,
+                    Sodium = ri.Ingredient.Nutrition.Sodium
+                } : null
+            }).ToList(),
+            TotalMacros = new TotalMacrosDto
             {
                 Calories = recipe.RecipeIngredients.Sum(ri => ri.Ingredient.Nutrition != null && ri.Ingredient.Nutrition.ServingSize > 0 
-                    ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * ri.Ingredient.Nutrition.Calories : 0),
+                    ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * (double)ri.Ingredient.Nutrition.Calories : 0),
                 Protein = recipe.RecipeIngredients.Sum(ri => ri.Ingredient.Nutrition != null && ri.Ingredient.Nutrition.ServingSize > 0 
-                    ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * ri.Ingredient.Nutrition.Protein : 0),
+                    ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * (double)ri.Ingredient.Nutrition.Protein : 0),
                 Carbs = recipe.RecipeIngredients.Sum(ri => ri.Ingredient.Nutrition != null && ri.Ingredient.Nutrition.ServingSize > 0 
-                    ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * ri.Ingredient.Nutrition.Carbs : 0),
+                    ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * (double)ri.Ingredient.Nutrition.Carbs : 0),
                 Fats = recipe.RecipeIngredients.Sum(ri => ri.Ingredient.Nutrition != null && ri.Ingredient.Nutrition.ServingSize > 0 
-                    ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * ri.Ingredient.Nutrition.Fats : 0)
+                    ? (double)ri.Amount / (double)ri.Ingredient.Nutrition.ServingSize * (double)ri.Ingredient.Nutrition.Fats : 0)
             }
         };
 
@@ -109,9 +145,7 @@ public class RecipeController : ControllerBase
     {
         var userExists = await _context.Users.AnyAsync(u => u.Id == dto.AuthorId);
         if (!userExists)
-        {
             return BadRequest(new { message = "Author ID does not exist" });
-        }
 
         var requestedIngredientIds = dto.Ingredients.Select(i => i.IngredientId).Distinct().ToList();
         var existingIngredientIds = await _context.Ingredients
@@ -120,9 +154,7 @@ public class RecipeController : ControllerBase
             .ToListAsync();
 
         if (existingIngredientIds.Count != requestedIngredientIds.Count)
-        {
             return BadRequest(new { message = "One or more Ingredient IDs do not exist." });
-        }
 
         var recipe = new Recipe
         {
@@ -151,20 +183,13 @@ public class RecipeController : ControllerBase
             .FirstOrDefaultAsync(r => r.Id == id);
 
         if (recipe == null)
-        {
             return NotFound(new { message = "Recipe not found" });
-        }
 
-        // Updating instructions if provided
         if (!string.IsNullOrEmpty(dto.Instructions))
-        {
             recipe.Instructions = dto.Instructions;
-        }
 
-        // Updatinh ingredients if provided
         if (dto.Ingredients != null && dto.Ingredients.Any())
         {
-            // Validate all ingredient IDs exist
             var requestedIngredientIds = dto.Ingredients.Select(i => i.IngredientId).Distinct().ToList();
             var existingIngredientIds = await _context.Ingredients
                 .Where(i => requestedIngredientIds.Contains(i.Id))
@@ -172,14 +197,9 @@ public class RecipeController : ControllerBase
                 .ToListAsync();
 
             if (existingIngredientIds.Count != requestedIngredientIds.Count)
-            {
                 return BadRequest(new { message = "One or more Ingredient IDs do not exist." });
-            }
 
-            // Removing existing ingredients
             _context.RecipeIngredients.RemoveRange(recipe.RecipeIngredients);
-
-            // Adding new ingredients
             recipe.RecipeIngredients = dto.Ingredients.Select(item => new RecipeIngredient
             {
                 IngredientId = item.IngredientId,
@@ -200,9 +220,7 @@ public class RecipeController : ControllerBase
     {
         var recipe = await _context.Recipes.FindAsync(id);
         if (recipe == null)
-        {
             return NotFound(new { message = "Recipe not found" });
-        }
 
         _context.Recipes.Remove(recipe);
         await _context.SaveChangesAsync();
@@ -211,22 +229,16 @@ public class RecipeController : ControllerBase
     }
 }
 
-public class CreateRecipeDto
-{
-    public int AuthorId { get; set; }
-    public string? Instructions { get; set; }
-    public List<CreateRecipeIngredientDto> Ingredients { get; set; } = new();
-}
 
-public class UpdateRecipeDto
-{
-    public string? Instructions { get; set; }
-    public List<CreateRecipeIngredientDto>? Ingredients { get; set; }
-}
 
-public class CreateRecipeIngredientDto
-{
-    public int IngredientId { get; set; }
-    public decimal Amount { get; set; }
-    public string? Unit { get; set; } = "g";
-}
+
+
+
+
+
+
+
+
+
+
+

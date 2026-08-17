@@ -11,8 +11,8 @@ using prepMeal.Data;
 namespace prepMeal.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260817122716_food-groups")]
-    partial class foodgroups
+    [Migration("20260817174344_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,23 +53,23 @@ namespace prepMeal.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Calories")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Calories")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Carbs")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Carbs")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Fats")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Fats")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("IngredientId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Protein")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Protein")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("SaturatedFats")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("SaturatedFats")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ServingSize")
                         .HasPrecision(18, 2)
@@ -80,11 +80,11 @@ namespace prepMeal.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("Sodium")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal?>("Sodium")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Sugar")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Sugar")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

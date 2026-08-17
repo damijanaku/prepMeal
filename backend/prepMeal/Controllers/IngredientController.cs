@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using prepMeal.Data;
+using prepMeal.DTOs.Ingredient;
+using prepMeal.DTOs.Nutrition;
 using prepMeal.Models;
+using prepMeal.Models.Enums;
 
 namespace prepMeal.Controllers;
 
@@ -97,9 +100,10 @@ public class IngredientController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateIngredient([FromBody] CreateIngredientDto dto)
     {
+        // Update the validation message to match your enum
         if (!Enum.TryParse<FoodGroup>(dto.FoodGroup, true, out var foodGroup))
         {
-            return BadRequest(new { message = "Invalid food group. Valid values: Fruits, Vegetables, Grains, Proteins, Dairy, FatsAndOils, Sweets, NutsAndSeeds, Legumes, HerbsAndSpices, Other" });
+            return BadRequest(new { message = "Invalid food group. Valid values: Fruits, Vegetables, Grains, ProteinFoods, Dairy, FatsAndOils, SweetsAndSnacks, Beverages, Others" });
         }
 
         var ingredient = new Ingredient
@@ -144,7 +148,7 @@ public class IngredientController : ControllerBase
         {
             if (!Enum.TryParse<FoodGroup>(dto.FoodGroup, true, out var foodGroup))
             {
-                return BadRequest(new { message = "Invalid food group. Valid values: Fruits, Vegetables, Grains, Proteins, Dairy, FatsAndOils, Sweets, NutsAndSeeds, Legumes, HerbsAndSpices, Other" });
+                return BadRequest(new { message = "Invalid food group. Valid values: Fruits, Vegetables, Grains, ProteinFoods, Dairy, FatsAndOils, SweetsAndSnacks, Beverages, Others" });
             }
             ingredient.FoodGroup = foodGroup;
         }
@@ -190,50 +194,9 @@ public class IngredientController : ControllerBase
 
 
 
-public class IngredientDto
-{
-    public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string FoodGroup { get; set; } = string.Empty; 
-    public NutritionDto? Nutrition { get; set; }
-}
 
-public class CreateIngredientDto
-{
-    public string Name { get; set; } = string.Empty;
-    public string FoodGroup { get; set; } = "Other"; 
-    public CreateNutritionDto? Nutrition { get; set; }
-}
 
-public class UpdateIngredientDto
-{
-    public string? Name { get; set; }
-    public string? FoodGroup { get; set; } // Added
-    public CreateNutritionDto? Nutrition { get; set; }
-}
 
-public class CreateNutritionDto
-{
-    public decimal ServingSize { get; set; } = 100m;
-    public string ServingUnit { get; set; } = "g";
-    public int Calories { get; set; }
-    public int Carbs { get; set; }
-    public int Sugar { get; set; }
-    public int Fats { get; set; }
-    public int SaturatedFats { get; set; }
-    public int Protein { get; set; }
-    public int? Sodium { get; set; }
-}
 
-public class NutritionDto
-{
-    public decimal ServingSize { get; set; }
-    public string ServingUnit { get; set; } = "g";
-    public int Calories { get; set; }
-    public int Carbs { get; set; }
-    public int Sugar { get; set; }
-    public int Fats { get; set; }
-    public int SaturatedFats { get; set; }
-    public int Protein { get; set; }
-    public int? Sodium { get; set; }
-}
+
+
