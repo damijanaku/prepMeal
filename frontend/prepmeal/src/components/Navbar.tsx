@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 function Navbar() {
   const { logout, isAuthenticated } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isIngredientsDropdownOpen, setIsIngredientsDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -51,45 +54,37 @@ function Navbar() {
               </Link>
             </li>
             
-            <li>
-              <button id="dropdownNvbarButton" data-dropdown-toggle="dropdownNavbar" className="flex items-center justify-between w-full py-2 px-3 rounded font-medium text-heading md:w-auto hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0">
-                Dropdown 
-                <svg className="w-4 h-4 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 9-7 7-7-7"/>
-                </svg>
-              </button>
-              <div id="dropdownNavbar" className="z-10 hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44">
-                <ul className="p-2 text-sm text-body font-medium" aria-labelledby="dropdownNvbarButton">
-                  <li>
-                    <a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">
-                      Dashboard
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">
-                      Settings
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">
-                      Earnings
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-            
-            <li>
-              <Link 
-                to="/ingredients" 
-                className={`block py-2 px-3 rounded md:p-0 ${
-                  isActive('/ingredients')
+            <li className="relative">
+              <button
+                onClick={() => setIsIngredientsDropdownOpen(!isIngredientsDropdownOpen)}
+                className={`flex items-center gap-1 py-2 px-3 rounded md:p-0 ${
+                  isActive('/ingredients') || isActive('/categories') || isActive('/add-ingredient')
                     ? 'text-white bg-brand md:bg-transparent md:text-fg-brand'
                     : 'text-heading hover:bg-neutral-tertiary md:hover:bg-transparent md:hover:text-fg-brand'
                 }`}
               >
                 Ingredients
-              </Link>
+                  <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
+              </button>
+              
+              {isIngredientsDropdownOpen && (
+                <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg  py-1 z-10 md:mt-0 md:top-full bg-[#FBE9E7]">
+                  <Link
+                    to="/ingredients"
+                    className="block px-4 py-2 text-sm text-heading bg-[#FBE9E7] hover:bg-neutral-secondary-soft"
+                    onClick={() => setIsIngredientsDropdownOpen(false)}
+                  >
+                    All Ingredients
+                  </Link>
+                  <Link
+                    to="/createingredient"
+                    className="block px-4 py-2 text-sm text-heading bg-[#FBE9E7] hover:bg-neutral-secondary-soft"
+                    onClick={() => setIsIngredientsDropdownOpen(false)}
+                  >
+                    Add New
+                  </Link>
+                </div>
+              )}
             </li>
             
             {isAuthenticated ? (

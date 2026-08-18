@@ -53,8 +53,8 @@ function FoodGroupList() {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <div className="flex flex-wrap justify-center items-center gap-4 p-4">
+        <div className="container mx-auto p-4 ">
+            <div className="flex flex-wrap justify-center items-center gap-4 p-4 ">
                 {foodGroups.map((group) => (
                     <button 
                         onClick={() => fetchIngredientsByFoodGroup(group.name)}
@@ -105,10 +105,9 @@ function FoodGroupList() {
     );
 }
 
-// Ingredient Card Component
 function IngredientCard({ ingredient }: { ingredient: Ingredient }) {
     return (
-        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+        <div className="bg-[#FBE9E7] rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
             <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
                     <h3 className="text-lg font-semibold text-gray-800 capitalize">

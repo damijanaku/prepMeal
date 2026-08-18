@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicRoute } from './components/PublicRoute'; 
 import Ingredients from './pages/(authenticated)/(tabs)/ingredients';
+import CreateIngredient from './pages/(authenticated)/(tabs)/createingredient';
 
 function App() {
   return (
@@ -43,6 +44,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <Ingredients />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/createingredient"
+            element={
+              <ProtectedRoute>
+                <CreateIngredient />
               </ProtectedRoute>
             }
           />
