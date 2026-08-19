@@ -10,12 +10,16 @@ public class Recipe
     [Key]
     public int Id { get; set; }
 
+    public string RecipeName { get; set; } = string.Empty;
+
     public int AuthorId { get; set; }
     
     [ForeignKey(nameof(AuthorId))]
     public User Author { get; set; } = null!;
 
     public string? Instructions { get; set; }
+
+    public string? ImageUrl { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 

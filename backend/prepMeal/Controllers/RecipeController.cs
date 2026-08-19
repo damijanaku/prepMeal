@@ -1,9 +1,12 @@
+using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using prepMeal.Data;
 using prepMeal.DTOs.Nutrition;
 using prepMeal.DTOs.Recipe;
+using prepMeal.DTOs.RecipeIngredient;
 using prepMeal.DTOs.Shared;
 using prepMeal.Models;
 
@@ -34,7 +37,9 @@ public class RecipeController : ControllerBase
         var result = recipes.Select(r => new RecipeDto
         {
             Id = r.Id,
+            RecipeName = r.RecipeName,
             Instructions = r.Instructions,
+            ImageUrl = r.ImageUrl,
             CreatedAt = r.CreatedAt,
             Author = new AuthorDto
             {
@@ -95,7 +100,9 @@ public class RecipeController : ControllerBase
         var result = new RecipeDto
         {
             Id = recipe.Id,
+            RecipeName = recipe.RecipeName,
             Instructions = recipe.Instructions,
+            ImageUrl = recipe.ImageUrl,
             CreatedAt = recipe.CreatedAt,
             Author = new AuthorDto
             {
@@ -139,40 +146,90 @@ public class RecipeController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
-    [Authorize]
-    public async Task<IActionResult> CreateRecipe([FromBody] CreateRecipeDto dto)
+[HttpPost]
+[Authorize]
+public async Task<IActionResult> CreateRecipe([FromForm] CreateRecipeDto dto)
+{
+    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+    if (string.IsNullOrEmpty(userIdClaim))
     {
-        var userExists = await _context.Users.AnyAsync(u => u.Id == dto.AuthorId);
-        if (!userExists)
-            return BadRequest(new { message = "Author ID does not exist" });
-
-        var requestedIngredientIds = dto.Ingredients.Select(i => i.IngredientId).Distinct().ToList();
-        var existingIngredientIds = await _context.Ingredients
-            .Where(i => requestedIngredientIds.Contains(i.Id))
-            .Select(i => i.Id)
-            .ToListAsync();
-
-        if (existingIngredientIds.Count != requestedIngredientIds.Count)
-            return BadRequest(new { message = "One or more Ingredient IDs do not exist." });
-
-        var recipe = new Recipe
-        {
-            AuthorId = dto.AuthorId,
-            Instructions = dto.Instructions,
-            RecipeIngredients = dto.Ingredients.Select(item => new RecipeIngredient
-            {
-                IngredientId = item.IngredientId,
-                Amount = item.Amount,
-                Unit = item.Unit ?? "g"
-            }).ToList()
-        };
-
-        _context.Recipes.Add(recipe);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetRecipe), new { id = recipe.Id }, new { recipe.Id, message = "Recipe created successfully" });
+        return Unauthorized(new { message = "User ID claim is missing" });
     }
+
+    if (!int.TryParse(userIdClaim, out int userId))
+    {
+        return Unauthorized(new { message = "Invalid User ID claim" });
+    }
+
+    var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+    if (!userExists)
+        return BadRequest(new { message = "Author ID does not exist" });
+
+    // Parsing the ingredients JSON
+    List<CreateRecipeIngredientDto> ingredients = new();
+    try
+    {
+        ingredients = JsonSerializer.Deserialize<List<CreateRecipeIngredientDto>>(dto.Ingredients) ?? new();
+    }
+    catch (JsonException)
+    {
+        return BadRequest(new { message = "Invalid ingredients data format" });
+    }
+
+    if (!ingredients.Any())
+    {
+        return BadRequest(new { message = "At least one ingredient is required" });
+    }
+
+    var requestedIngredientIds = ingredients.Select(i => i.IngredientId).Distinct().ToList();
+    var existingIngredientIds = await _context.Ingredients
+        .Where(i => requestedIngredientIds.Contains(i.Id))
+        .Select(i => i.Id)
+        .ToListAsync();
+
+    if (existingIngredientIds.Count != requestedIngredientIds.Count)
+        return BadRequest(new { message = "One or more Ingredient IDs do not exist." });
+
+    if (dto.Image == null || dto.Image.Length == 0)
+    {
+        return BadRequest(new { message = "Image is required for the recipe." });
+    }
+
+    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
+    if (!Directory.Exists(uploadsFolder))
+    {
+        Directory.CreateDirectory(uploadsFolder);
+    }
+
+    // Generate unique filename to avoid conflicts
+    var uniqueFileName = $"{Guid.NewGuid()}_{dto.Image.FileName}";
+    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+    using (var stream = new FileStream(filePath, FileMode.Create))
+    {
+        await dto.Image.CopyToAsync(stream);
+    }
+
+    var recipe = new Recipe
+    {
+        AuthorId = userId,
+        RecipeName = dto.RecipeName,
+        Instructions = dto.Instructions,
+        ImageUrl = $"/uploads/{uniqueFileName}",
+        RecipeIngredients = ingredients.Select(item => new RecipeIngredient
+        {
+            IngredientId = item.IngredientId,
+            Amount = item.Amount,
+            Unit = item.Unit ?? "g"
+        }).ToList()
+    };
+
+    _context.Recipes.Add(recipe);
+    await _context.SaveChangesAsync();
+
+    return CreatedAtAction(nameof(GetRecipe), new { id = recipe.Id }, new { message = "Recipe created successfully", recipe.Id });
+}
 
     [HttpPut("{id}")]
     [Authorize]

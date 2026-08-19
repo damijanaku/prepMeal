@@ -7,6 +7,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicRoute } from './components/PublicRoute'; 
 import Ingredients from './pages/(authenticated)/(tabs)/ingredients';
 import CreateIngredient from './pages/(authenticated)/(tabs)/createingredient';
+import CreateRecipes from './pages/(authenticated)/(tabs)/createrecipes';
 
 function App() {
   return (
@@ -56,7 +57,16 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
+
+          <Route
+            path="/createrecipes"
+            element={
+              <ProtectedRoute>
+                <CreateRecipes />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>

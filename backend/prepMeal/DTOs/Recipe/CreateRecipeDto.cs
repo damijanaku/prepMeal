@@ -1,9 +1,11 @@
 using prepMeal.DTOs.RecipeIngredient;
 
 namespace prepMeal.DTOs.Recipe;
+
 public class CreateRecipeDto
 {
-    public int AuthorId { get; set; }
+    public string RecipeName { get; set; } = string.Empty;
     public string? Instructions { get; set; }
-    public List<CreateRecipeIngredientDto> Ingredients { get; set; } = new();
+    public IFormFile? Image { get; set; }
+    public string Ingredients { get; set; } = string.Empty; 
 }

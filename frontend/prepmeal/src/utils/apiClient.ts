@@ -15,9 +15,10 @@ export const useApiClient = () => {
     const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
 
     // Prepare headers
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    const isFormData = fetchOptions.body instanceof FormData;
+    const headers: Record<string, string> = isFormData
+      ? {}  
+      : { 'Content-Type': 'application/json' };
 
     if (requiresAuth) {
       if (!accessToken) {

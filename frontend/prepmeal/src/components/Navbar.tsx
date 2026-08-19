@@ -53,10 +53,48 @@ function Navbar() {
                 Home
               </Link>
             </li>
+            <li className="relative">
+              <button
+                onClick={() => {
+                  setIsDropdownOpen(!isDropdownOpen);
+                  setIsIngredientsDropdownOpen(false);
+                }}
+                className={`flex items-center gap-1 py-2 px-3 rounded md:p-0 ${
+                  isActive('/recipes') || isActive('/createrecipes')
+                    ? 'text-white bg-brand md:bg-transparent md:text-fg-brand'
+                    : 'text-heading hover:bg-neutral-tertiary md:hover:bg-transparent md:hover:text-fg-brand'
+                }`}
+              >
+                Recipes
+                  <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
+              </button>
+              
+              {isDropdownOpen && (
+                <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg py-1 z-10 md:mt-0 md:top-full bg-[#FBE9E7]">
+                  <Link
+                    to="/recipes"
+                    className="block px-4 py-2 text-sm text-heading bg-[#FBE9E7] hover:bg-neutral-secondary-soft"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    All Recipes
+                  </Link>
+                  <Link
+                    to="/createrecipes"
+                    className="block px-4 py-2 text-sm text-heading bg-[#FBE9E7] hover:bg-neutral-secondary-soft"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Create Recipes
+                  </Link>
+                </div>
+              )}
+            </li>
             
             <li className="relative">
               <button
-                onClick={() => setIsIngredientsDropdownOpen(!isIngredientsDropdownOpen)}
+                onClick={() => {
+                  setIsIngredientsDropdownOpen(!isIngredientsDropdownOpen);
+                  setIsDropdownOpen(false);
+                }}
                 className={`flex items-center gap-1 py-2 px-3 rounded md:p-0 ${
                   isActive('/ingredients') || isActive('/categories') || isActive('/add-ingredient')
                     ? 'text-white bg-brand md:bg-transparent md:text-fg-brand'
