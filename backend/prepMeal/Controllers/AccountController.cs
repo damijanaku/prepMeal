@@ -80,9 +80,56 @@ public class AccountController : ControllerBase
         var jwtService = new JwtService(_config);
         var token = jwtService.GenerateToken(user);
 
+        //refresh token
+        var refreshToken = jwtService.GenerateRefreshToken(user);
+
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); // Set expiry
+        await _context.SaveChangesAsync();
+
         return Ok(new
         {
             token,
+            refreshToken,
+            user = new { user.Id, user.Name, user.Username, user.Email }
+        });
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] TokenRefreshRequest request)
+    {
+        if (string.IsNullOrEmpty(request.RefreshToken))
+        {
+            return BadRequest(new { message = "Refresh token is required." });
+        }
+        
+        // find user by refresh token
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == request.RefreshToken);
+
+        if (user == null)
+        {
+            return Unauthorized(new { message = "Invalid refresh token." });
+        }
+
+        if (user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        {
+            return Unauthorized(new { message = "Refresh token has expired." });
+        }
+
+        // Generate new JWT and refresh token
+        var jwtService = new JwtService(_config);
+        var newToken = jwtService.GenerateToken(user);
+        var newRefreshToken = jwtService.GenerateRefreshToken(user);
+
+        // update refresh token in database
+        user.RefreshToken = newRefreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); // Set new
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            token = newToken,
+            refreshToken = newRefreshToken,
             user = new { user.Id, user.Name, user.Username, user.Email }
         });
     }

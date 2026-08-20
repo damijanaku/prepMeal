@@ -1,5 +1,7 @@
+import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useApiClient } from "../utils/apiClient";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -8,31 +10,47 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { login } = useAuth(); 
+  const { apiCall } = useApiClient();
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
+    
     setErrorMessage("");
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5204/api/account/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      console.log('Attempting login with:', { usernameOrEmail: email });
+      
+      const response = await apiCall('/api/account/login', {
+        method: 'POST',
         body: JSON.stringify({ usernameOrEmail: email, password }),
+        requiresAuth: false 
       });
-
-      if (response.ok) {
-        navigate("/dashboard"); // Redirect user on successful login
-        return;
+      
+      const data = await response.json();
+      console.log('Login response:', data);
+      
+      if (!data.token || !data.refreshToken || !data.user) {
+        throw new Error('Invalid response from server: missing token or user data');
       }
-
-      const errorBody = await response.text();
-      setErrorMessage(errorBody || "Invalid credentials. Please try again.");
+      
+      login(data.token, data.refreshToken, data.user);
+      console.log('Login successful, navigating to dashboard');
+      navigate('/dashboard');
+      
     } catch (error) {
-      setErrorMessage("Network error. Please verify backend status and CORS settings.");
-      console.error(error);
+      console.error('Login error:', error);
+      
+      let message = 'Login failed. Please try again.';
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      setErrorMessage(message);
+      
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        setErrorMessage('Cannot connect to server. Please check if the backend is running.');
+      }
     } finally {
       setIsLoading(false);
     }

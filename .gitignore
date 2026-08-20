@@ -2,6 +2,10 @@
 .DS_Store
 Thumbs.db
 
+# Root .NET build output
+/bin/
+/obj/
+
 # Editor folders
 .vs/
 .vscode/
@@ -55,6 +59,10 @@ secrets.json
 /backend/prepMeal/*.exe
 /backend/prepMeal/*.db
 /backend/prepMeal/*.sqlite
+/backend/prepMeal/*.db-wal
+/backend/prepMeal/*.db-shm
+/backend/prepMeal/*.sqlite-wal
+/backend/prepMeal/*.sqlite-shm
 /backend/prepMeal/appsettings.Development.json
 /backend/prepMeal/appsettings.Local.json
 /backend/prepMeal/Library/Application Support/Microsoft/DeveloperTools/deviceid
