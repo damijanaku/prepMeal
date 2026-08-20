@@ -9,6 +9,7 @@ import Ingredients from './pages/(authenticated)/(tabs)/ingredients';
 import CreateIngredient from './pages/(authenticated)/(tabs)/createingredient';
 import CreateRecipes from './pages/(authenticated)/(tabs)/createrecipes';
 import GetAllRecipes from './pages/(authenticated)/(tabs)/recipes';
+import RecipeDescription from './pages/(authenticated)/(tabs)/RecipeDescription';
 
 function App() {
   return (
@@ -76,6 +77,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/recipe/:id"  
+            element={
+                <ProtectedRoute>
+                    <RecipeDescription />
+                </ProtectedRoute>
+            }
+        />
 
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>

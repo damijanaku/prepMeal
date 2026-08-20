@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../../../components/Navbar";
 import { useApiClient } from "../../../utils/apiClient";
+import { useNavigate } from 'react-router-dom';
 
 interface Nutrition {
     servingSize: number;
@@ -41,9 +42,14 @@ interface Recipe {
 
 function GetAllRecipes() {
     const { apiCall } = useApiClient();
+    const navigate = useNavigate();
     const [recipes, setRecipes] = useState<Recipe[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const handleViewRecipe = (recipeId: number) => {
+        navigate(`/recipe/${recipeId}`);
+    };
 
     const API_BASE_URL = 'http://localhost:5204';
 
@@ -148,7 +154,7 @@ function GetAllRecipes() {
                                         
                                         {/* View Recipe Button */}
                                         <button 
-                                            onClick={() => console.log(`View recipe ${recipe.id}`)}
+                                            onClick={() => handleViewRecipe(recipe.id)}
                                             className="w-full bg-[#E57373] text-white px-4 py-2 rounded hover:bg-[#E55555] transition-colors"
                                         >
                                             View Recipe
