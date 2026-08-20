@@ -54,6 +54,10 @@ function RecipeDescription() {
         return `${API_BASE_URL}${recipe.imageUrl}`;
     };
 
+     const handlePrint = () => {
+        window.print();
+    };
+
     if (loading) {
         return (
             <div className="bg-[#FFC5BB] min-h-screen flex flex-col items-center pt-20">
@@ -88,6 +92,13 @@ function RecipeDescription() {
                     >
                          Back to Recipes
                     </button>
+
+                    <button 
+                                onClick={handlePrint}
+                                className="text-white hover:text-[#E55555] transition-colors flex items-center gap-2"
+                            >
+                                Print PDF
+                            </button>
                     
                     <button 
                         onClick={() => navigate(`/recipe/edit/${recipe.id}`)}
