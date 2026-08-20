@@ -10,6 +10,7 @@ import CreateIngredient from './pages/(authenticated)/(tabs)/createingredient';
 import CreateRecipes from './pages/(authenticated)/(tabs)/createrecipes';
 import GetAllRecipes from './pages/(authenticated)/(tabs)/recipes';
 import RecipeDescription from './pages/(authenticated)/(tabs)/RecipeDescription';
+import EditRecipe from './pages/(authenticated)/(tabs)/editrecipe';
 
 function App() {
   return (
@@ -85,7 +86,16 @@ function App() {
                     <RecipeDescription />
                 </ProtectedRoute>
             }
-        />
+          />
+
+          <Route
+            path="/recipe/edit/:id"
+            element={
+              <ProtectedRoute>
+                <EditRecipe />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>

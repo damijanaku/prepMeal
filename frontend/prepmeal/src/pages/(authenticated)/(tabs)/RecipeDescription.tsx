@@ -4,7 +4,6 @@ import { useApiClient } from "../../../utils/apiClient";
 import Navbar from "../../../components/Navbar";
 import { Recipe } from "../../../utils/recipe";
 
-
 function RecipeDescription() {
     const { id } = useParams<{ id: string }>(); // recipe ID from URL
     const navigate = useNavigate();
@@ -81,12 +80,22 @@ function RecipeDescription() {
         <div className="bg-[#FFC5BB] min-h-screen flex flex-col items-center pt-20">
             <Navbar />
             <div className="w-full max-w-4xl px-4">
-                <button 
-                    onClick={() => navigate('/getrecipes')}
-                    className="mb-6 text-white hover:text-[#E55555]"
-                >
-                     Back to Recipes
-                </button>
+                {/* Button Container */}
+                <div className="flex justify-between items-center mb-6">
+                    <button 
+                        onClick={() => navigate('/getrecipes')}
+                        className="text-white hover:text-[#E55555] transition-colors flex items-center gap-2"
+                    >
+                         Back to Recipes
+                    </button>
+                    
+                    <button 
+                        onClick={() => navigate(`/recipe/edit/${recipe.id}`)}
+                        className="text-white hover:text-[#E55555] transition-colors flex items-center gap-2"
+                    >
+                        Edit Recipe
+                    </button>
+                </div>
 
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
                     <div className="w-full h-64 bg-gray-200">
@@ -148,8 +157,6 @@ function RecipeDescription() {
                                 </p>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
             </div>
