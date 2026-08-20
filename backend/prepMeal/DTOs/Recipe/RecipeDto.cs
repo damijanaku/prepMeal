@@ -10,6 +10,7 @@ public class RecipeDto
     public string ? ImageUrl { get; set; }
     public DateTime CreatedAt { get; set; }
     public AuthorDto Author { get; set; } = null!;
+    public int NumberOfServings { get; set; } = 1;
     public List<RecipeIngredientDto> Ingredients { get; set; } = new();
     public TotalMacrosDto TotalMacros { get; set; } = null!;
 }

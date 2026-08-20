@@ -17,6 +17,8 @@ public class Recipe
     [ForeignKey(nameof(AuthorId))]
     public User Author { get; set; } = null!;
 
+    public int NumberOfServings { get; set; } = 1;
+
     public string? Instructions { get; set; }
 
     public string? ImageUrl { get; set; }

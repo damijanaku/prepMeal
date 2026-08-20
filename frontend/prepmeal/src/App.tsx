@@ -8,6 +8,7 @@ import { PublicRoute } from './components/PublicRoute';
 import Ingredients from './pages/(authenticated)/(tabs)/ingredients';
 import CreateIngredient from './pages/(authenticated)/(tabs)/createingredient';
 import CreateRecipes from './pages/(authenticated)/(tabs)/createrecipes';
+import GetAllRecipes from './pages/(authenticated)/(tabs)/recipes';
 
 function App() {
   return (
@@ -63,6 +64,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <CreateRecipes />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/getrecipes"
+            element={
+              <ProtectedRoute>
+                <GetAllRecipes />
               </ProtectedRoute>
             }
           />

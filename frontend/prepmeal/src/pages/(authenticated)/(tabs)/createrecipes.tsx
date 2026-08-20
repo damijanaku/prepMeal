@@ -16,6 +16,7 @@ function CreateRecipes() {
     const [recipeName, setRecipeName] = useState<string>('');
     const [instructions, setInstructions] = useState<string>('');
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+    const [servingSize, setServingSize] = useState<number>(1);
     const [selectedIngredients, setSelectedIngredients] = useState<SelectedIngredient[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -149,7 +150,7 @@ function CreateRecipes() {
             formData.append('RecipeName', recipeName);
             formData.append('Instructions', instructions || '');
             formData.append('Image', file);
-
+            formData.append('NumberOfServings', servingSize.toString());
             const ingredientsData = selectedIngredients.map(ing => ({
                 IngredientId: ing.id,
                 Amount: ing.amount,
@@ -361,6 +362,22 @@ function CreateRecipes() {
                                         )}
                                     </div>
                                 </div>
+                            </div>
+                            <div>
+                                <label htmlFor="servingSize" className="mb-1 block text-sm font-medium text-[#F28378]">
+                                    Number of Servings
+                                </label>
+                                <input
+                                    type="number"
+                                    id="servingSize"
+                                    value={servingSize}
+                                    onChange={(e) => setServingSize(parseInt(e.target.value) || 1)}
+                                    placeholder="Enter number of servings"
+                                    autoComplete="off"
+                                    min={1}
+                                    required
+                                    className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#EF9A9A]"
+                                />
                             </div>
                         </div>
                     </div>

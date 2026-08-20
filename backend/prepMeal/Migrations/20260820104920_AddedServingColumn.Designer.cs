@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using prepMeal.Data;
 
@@ -10,9 +11,11 @@ using prepMeal.Data;
 namespace prepMeal.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260820104920_AddedServingColumn")]
+    partial class AddedServingColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
@@ -107,15 +110,15 @@ namespace prepMeal.Migrations
                     b.Property<string>("Instructions")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("NumberOfServings")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("RecipeName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("numberOfServings")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

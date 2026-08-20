@@ -23,6 +23,62 @@ public class RecipeController : ControllerBase
         _context = context;
     }
 
+    [HttpGet("image/{id}")]
+    [Authorize]
+    public async Task<IActionResult> GetRecipeImage(int id)
+    {
+        var recipe = await _context.Recipes
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (recipe == null)
+            return NotFound(new { message = "Recipe not found" });
+
+        if (string.IsNullOrEmpty(recipe.ImageUrl))
+            return NotFound(new { message = "Recipe has no image" });
+        
+        var fileName = recipe.ImageUrl.Replace("/uploads/", "");
+        
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        
+        var filePath = Path.Combine(uploadsFolder, fileName);
+    
+        if (!Directory.Exists(uploadsFolder))
+        {
+            return NotFound(new { 
+                message = "Uploads directory not found", 
+                path = uploadsFolder 
+            });
+        }
+
+        // List all files in the directory for debugging
+        var files = Directory.GetFiles(uploadsFolder);
+        Console.WriteLine($"Files in uploads folder: {string.Join(", ", files.Select(Path.GetFileName))}");
+
+        if (!System.IO.File.Exists(filePath))
+        {
+            return NotFound(new { 
+                message = "Image file not found", 
+                path = filePath,
+                availableFiles = files.Select(Path.GetFileName).ToList()
+            });
+        }
+
+        //  content type based on file extension
+        var extension = Path.GetExtension(fileName).ToLower();
+        var contentType = extension switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".bmp" => "image/bmp",
+            ".webp" => "image/webp",
+            _ => "application/octet-stream"
+        };
+
+        var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+        return File(fileBytes, contentType);
+    }
+
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> GetRecipes()
@@ -41,6 +97,7 @@ public class RecipeController : ControllerBase
             Instructions = r.Instructions,
             ImageUrl = r.ImageUrl,
             CreatedAt = r.CreatedAt,
+            NumberOfServings = r.NumberOfServings,
             Author = new AuthorDto
             {
                 Id = r.Author.Id,
@@ -104,6 +161,7 @@ public class RecipeController : ControllerBase
             Instructions = recipe.Instructions,
             ImageUrl = recipe.ImageUrl,
             CreatedAt = recipe.CreatedAt,
+            NumberOfServings = recipe.NumberOfServings, 
             Author = new AuthorDto
             {
                 Id = recipe.Author.Id,
@@ -217,6 +275,7 @@ public async Task<IActionResult> CreateRecipe([FromForm] CreateRecipeDto dto)
         RecipeName = dto.RecipeName,
         Instructions = dto.Instructions,
         ImageUrl = $"/uploads/{uniqueFileName}",
+        NumberOfServings = dto.NumberOfServings,
         RecipeIngredients = ingredients.Select(item => new RecipeIngredient
         {
             IngredientId = item.IngredientId,
@@ -241,9 +300,15 @@ public async Task<IActionResult> CreateRecipe([FromForm] CreateRecipeDto dto)
 
         if (recipe == null)
             return NotFound(new { message = "Recipe not found" });
+            
+        if (dto.NumberOfServings.HasValue && dto.NumberOfServings.Value > 0)
+            recipe.NumberOfServings = dto.NumberOfServings.Value;
 
         if (!string.IsNullOrEmpty(dto.Instructions))
             recipe.Instructions = dto.Instructions;
+
+        if (!string.IsNullOrEmpty(dto.RecipeName))
+            recipe.RecipeName = dto.RecipeName;
 
         if (dto.Ingredients != null && dto.Ingredients.Any())
         {

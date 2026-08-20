@@ -17,6 +17,9 @@ public_key.pem
 *.sqlite-wal
 
 
+/wwwroot/uploads/
+
+
 ## Keep shared config tracked
 !appsettings.json
 
