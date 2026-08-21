@@ -1,0 +1,51 @@
+@media print {
+  .navbar,
+  button,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+  
+  .bg-\[#FFC5BB\] {
+    background: white !important;
+  }
+
+  .min-h-screen {
+    min-height: auto !important;
+    padding-top: 0 !important;
+  }
+
+  #recipe-content {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid !important;
+  }
+
+  .text-gray-600,
+  .text-gray-700,
+  .text-gray-500 {
+    color: black !important;
+  }
+
+  .mb-6,
+  .mb-4,
+  .my-4 {
+    page-break-inside: avoid !important;
+  }
+
+  .bg-gray-50 {
+    background: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+  }
+}
