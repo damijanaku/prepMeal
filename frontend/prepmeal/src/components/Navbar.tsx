@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { RiArrowDownSLine } from "react-icons/ri";
+import { RiArrowUpSLine } from "react-icons/ri";
 
 function Navbar() {
   const { logout, isAuthenticated } = useAuth();
@@ -67,9 +69,11 @@ function Navbar() {
                 }`}
               >
                 Recipes
-                <svg className="w-4 h-4 ml-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                  <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
-                </svg>
+                {isDropdownOpen ? (
+                  <RiArrowUpSLine />
+                ) : (
+                  <RiArrowDownSLine />
+                )}
               </button>
               
               {isDropdownOpen && (
@@ -105,9 +109,11 @@ function Navbar() {
                 }`}
               >
                 Ingredients
-                <svg className="w-4 h-4 ml-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                  <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
-                </svg>
+                {isIngredientsDropdownOpen ? (
+                  <RiArrowUpSLine />
+                ) : (
+                  <RiArrowDownSLine />
+                )}
               </button>
               
               {isIngredientsDropdownOpen && (

@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useApiClient } from "../../../utils/apiClient";
 import Navbar from "../../../components/Navbar";
 import { Recipe } from "../../../utils/recipe";
+import { IoPrint } from "react-icons/io5";
+import { RiEdit2Fill } from "react-icons/ri";
 
 function RecipeDescription() {
     const { id } = useParams<{ id: string }>(); // recipe ID from URL
@@ -93,19 +95,24 @@ function RecipeDescription() {
                          Back to Recipes
                     </button>
 
-                    <button 
+                    
+                    <div className="flex gap-4">
+                        <button 
+                            onClick={() => navigate(`/recipe/edit/${recipe.id}`)}
+                            className="text-white hover:text-[#E55555] transition-colors flex items-center gap-2"
+                            >
+                            <RiEdit2Fill size={24} />
+                            Edit Recipe
+                        </button>
+
+                        <button 
                                 onClick={handlePrint}
                                 className="text-white hover:text-[#E55555] transition-colors flex items-center gap-2"
                             >
-                                Print PDF
-                            </button>
+                                <IoPrint size={24} /> Print Recipe
+                        </button>
+                    </div>
                     
-                    <button 
-                        onClick={() => navigate(`/recipe/edit/${recipe.id}`)}
-                        className="text-white hover:text-[#E55555] transition-colors flex items-center gap-2"
-                    >
-                        Edit Recipe
-                    </button>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -130,6 +137,7 @@ function RecipeDescription() {
                                 Servings: {recipe.numberOfServings}
                             </p>
                         </div>
+
 
                         {/* Macros */}
                         <div className="bg-gray-50 p-4 my-4 rounded">
